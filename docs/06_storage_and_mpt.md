@@ -28,7 +28,7 @@
 
 📌 MPT 是一种**加密验证 + 快速路径匹配 + 节点压缩优化**结合体，专为以太坊状态树高频读写需求设计的。
 
-![ETH存储结构](../assets/06_store_tree.png)
+<img src="../assets/06_store_tree.png" alt="ETH存储结构" style="width:60%; max-width:600px;" />
 
 > ✅ 核心理念：**每个状态的更新都会映射到一个新的根哈希(roothash)，作为该状态快照的唯一标识。**
 >
@@ -77,7 +77,7 @@
 | 📦 Storage Trie | 每个合约的变量存储（slot -> value） | 每个合约账户 `storageRoot` |
 | 🧾 Transaction Trie | 当前区块所有交易的内容 | 区块头 `transactionsRoot` |
 
-![三树关系](../assets/06_store_relations.png.png)
+<img src="../assets/06_store_relations.png" alt="三树关系" style="width:60%; max-width:600px;" />
 
 ---
 
@@ -113,7 +113,7 @@ mapping(address => uint) balance;
 
 其 key 为：`keccak256(concat(slot, key_address))`
 
-![Storage Trie 结构](../assets/06_storage_trie_structor.png)
+<img src="../assets/06_storage_trie_structor.png" alt="Storage Trie 结构" style="width:60%; max-width:600px;" />
 
 ---
 
@@ -152,7 +152,6 @@ mapping(address => uint) balance;
 ## 🔄 导航
 
 > ⬅️ 上一篇：[EVM 工作原理与执行流程](./05_evm_execution.md)
->
 >
 > ➡️ 下一篇：[合约部署与调用流程](./07_contract_lifecycle.md)
 >

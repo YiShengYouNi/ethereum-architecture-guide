@@ -22,15 +22,13 @@
 
 | 模块 | 说明 |
 | --- | --- |
-| 📦 区块（Block） | 每个区块包含：
-• 区块头（Block Header）：包含上一个区块的哈希、时间戳、难度、状态根等。
-• 交易列表（Transactions）：本区块打包的交易记录 |
+| 📦 区块（Block） | 每个区块包含：• 区块头（Block Header）：包含上一个区块的哈希、时间戳、难度、状态根等。• 交易列表（Transactions）：本区块打包的交易记录 |
 | 🔗 链结构（Chain） | 通过哈希指针将区块按时间顺序链接成链 |
 | 🧮 共识算法 | 用于节点之间就新区块达成一致（如 PoW、PoS） |
 | 🗂 状态机 | 每个交易执行会引发全局状态更新 |
 | 🧾 交易池 | 暂存未上链的交易，由节点打包入块 |
 
-![区块核心组成](../assets/01_blockchain_basics.png)
+<img src="../assets/01_blockchain_basics.png" alt="区块链核心组成" style="width:60%; max-width:600px;" />
 
 ---
 

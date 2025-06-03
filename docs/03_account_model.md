@@ -62,7 +62,7 @@
 - ✅ **Patricia Trie**：前缀压缩，提高键值检索效率
 - ✅ **RLP 编码**：节点序列化，节省存储空间
 
-![MPT结构](../assets/03_mpt.png)
+<img src="../assets/03_mpt.png" alt="MPT结构" style="width:60%; max-width:600px;" />
 
 ## ✦ 5. 状态树：World State Trie (MPT 结构)
 
@@ -74,7 +74,7 @@
 - 以**前缀路径压缩**提高键值检索效率（Patricia 性）
 - 以**RLP 编码**优化节点存储（序列化效率）
 
-![世界状态树](../assets/03_state_tree.png)
+<img src="../assets/03_state_tree.png" alt="世界状态树" style="width:60%; max-width:600px;" />
 
 ### stateRoot
 
@@ -83,7 +83,7 @@
 - 它代表着**当前链上所有账户状态的加密快照**
 - 每次交易或合约执行导致状态变更，都会更新对应的 Merkle Trie 分支，并**重新计算出新的 stateRoot，**写入当前区块头的 `stateRoot`
 
-![stateRoot存储位置](../assets/03_state_root.png)
+<img src="../assets/03_state_root.png" alt="stateRoot存储位置" style="width:60%; max-width:600px;" />
 
 ---
 
