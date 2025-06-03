@@ -8,4 +8,4 @@
   - [7. 07 Contract Lifecycle](docs/07_contract_lifecycle.md)
   - [8. 08 Nodes And Rpc](docs/08_nodes_and_rpc.md)
   - [9. 09 Rollup Scaling](docs/09_rollup_scaling.md)
-  - [10. 10 Future Roadmap](docs/10_future_roadmap.md)
+  - [10. 10 Proxy Upgrade](docs/10_upgrade_proxy.md)
