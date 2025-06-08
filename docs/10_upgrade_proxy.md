@@ -1,15 +1,16 @@
 # 📘合约升级机制与 Proxy 模式
 
-智能合约一经部署即不可更改，这虽然带来安全性，却也意味着缺乏灵活性。为了解决这一矛盾，合约升级机制成为 Web3 项目不可或缺的基础能力。尤其在长期演进的协议中，Proxy 模式已经成为事实标准。
+智能合约一经部署后代码不可变，这是保障链上安全性的重要特性。但现实中，大多数 Web3 项目需要随着协议演进、功能扩展而持续更新。为了在不丢失状态和地址的前提下迭代逻辑，**Proxy（代理）升级模式**逐渐成为智能合约工程的事实标准。
+
+这篇文章将系统介绍合约为何需要升级、常见升级模式、Proxy 模式的执行原理、主流实现（Transparent、UUPS）、安全陷阱以及实际应用建议。
 
 ## ✦ 1. 为什么合约需要升级？
 
-- 部署后发现漏洞
-- 需要添加新功能（如治理、质押等）
-- 外部依赖更新（如价格预言机接口更换）
-- 为未来版本做预留扩展
+- 无法修复代码 Bug
+- 难以引入新功能或治理逻辑
+- 合约地址变更会导致用户资产与授权中断
 
-> 📌 合约一经部署无法修改，因此必须通过“升级代理”结构间接实现变更。
+> 📌 在 Web2 中升级部署是家常便饭，而 Web3 中则必须绕开“不可变”限制。
 >
 
 ---
@@ -18,77 +19,164 @@
 
 | 模式 | 说明 | 优缺点 |
 | --- | --- | --- |
-| 重新部署 | 部署新合约，通知用户切换地址 | 简单，但兼容性差 |
+| 重新部署 | 部署新合约，通知用户切换地址 | 简单，但兼容性差（地址变动、状态丢失） |
 | 数据迁移 | 携带旧数据部署新合约 | 易错，成本高 |
-| 🔥Proxy 模式 | 将调用转发到实现合约，数据保留 | 最通用的升级范式 |
+| 🔥Proxy 模式 | 保留地址与存储，仅升级逻辑合约 | 实现复杂，需谨慎设计 |
 
 ---
 
 ## ✦3. Proxy 模式的工作原理
 
-Proxy 模式通过两个合约实现：
+Proxy 升级通过两个合约组合实现：
 
 - 📌 **Proxy（代理合约）**：对外暴露地址，存储状态，负责将函数调用转发至逻辑合约。
-- 📌 **Implementation（逻辑合约）**：包含业务逻辑，无状态。
+- 📌 **Implementation（逻辑合约）**：存储纯逻辑代码，无状态。
 
-关键技术：
+### delegatecall 原理
 
-- 使用 `delegatecall` 调用逻辑合约，使其在 Proxy 的上下文中执行。
+调用者执行：
+
+```solidity
+(bool success, ) = impl.delegatecall(msg.data);
+```
+
+- 使用 `delegatecall` 调用逻辑合约
+- 使用 Proxy 合约的上下文（`msg.sender` 和 `storage`）
 - Proxy 合约中使用**固定槽**（如 EIP-1967）存储逻辑合约地址。
 
----
-
-### 4. 常见 Proxy 标准
-
-| 标准 | 特点 |
-| --- | --- |
-| EIP-1967 | 明确存储槽位置，便于分析与兼容 |
-| EIP-1167 Minimal Proxy（Clones） | 使用极简汇编创建实例，省 Gas |
-| UUPS（Upgradeable Proxy） | 将升级逻辑下放至逻辑合约本身，简化 Proxy |
+⚠️ 实际调用的函数体在 Logic 合约中，但读写的数据来自 Proxy 的存储区。
 
 ---
 
-### 5. Proxy 模式的部署结构图
+## ✦4. Proxy 合约结构图
 
-我将为此生成一张结构图，清晰展示：
+<img src="../assets/10_proxy_structor.png" alt="Proxy合约结构图" style="width:60%; max-width:600px;" />
 
-```text
+- 用户（EOA）发起调用，请求发送到 **Proxy 合约地址**
+- Proxy 合约内部不包含实际业务逻辑，仅持有存储，并使用 `delegatecall` 将请求转发至 逻辑 合约
+- 逻辑合约中的函数在 Proxy 的上下文中执行，即：
+  - 状态（storage）读取的是 Proxy 的数据
+  - `msg.sender` 为调用 Proxy 的原始地址
 
-调用者 → Proxy（有状态） → delegatecall → Implementation（纯逻辑）
+> ✅ 关键机制：逻辑代码来自逻辑合约（**Implementation**），状态数据来自代理合约
+>
 
+---
+
+## ✦5. 常见 Proxy 标准与对比
+
+| 标准 | 特点 | 使用项目 |
+| --- | --- | --- |
+| Transparent Proxy | Proxy 只转发普通函数，upgrade 权限给 Admin | OpenZeppelin 默认 |
+| UUPS Proxy ✅ | Upgrade 逻辑由 Logic 合约实现，更轻量 | OpenZeppelin（推荐） |
+| Beacon Proxy | 多个 Proxy 使用同一 Beacon 指定实现 | Lido、RocketPool |
+
+---
+
+## ✦6.UUPS 模式详解（推荐）
+
+UUPS（Universal Upgradeable Proxy Standard）是现代推荐的升级模式。
+
+### ✅ 特点
+
+- 升级逻辑放在 Logic 合约中（如 `upgradeTo()`）
+- Proxy 合约本身更轻量
+- 更适合 Gas 成本敏感的项目
+
+### 示例代码
+
+```solidity
+contract MyLogic is UUPSUpgradeable, OwnableUpgradeable {
+    uint256 public count;
+
+    function initialize() public initializer {
+        __Ownable_init();
+    }
+
+    function increment() public {
+        count++;
+    }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
+}
 ```
 
 ---
 
-### 6. UUPS 与 Transparent Proxy 对比
+## 7. Transparent vs UUPS 对比
 
-| 项目 | Transparent Proxy | UUPS Proxy |
+| 特性 | Transparent Proxy | UUPS Proxy ✅ |
 | --- | --- | --- |
-| 升级权限 | Proxy 合约控制 | 逻辑合约自带 upgrade 权限 |
-| Proxy 复杂度 | 多一层 Admin 管理 | 更轻量 |
-| 安全性 | 更清晰，易审计 | 有更高误用风险 |
+| Upgrade 权限 | Proxy 管理 | Logic 自持 |
+| 合约复杂度 | 多一层 Admin 管理 | 更轻量 |
+| 安全风险 | 误用低 | 需小心授权升级函数 |
+| 可组合性 | 较差 | 更适配模块化逻辑合约体系 |
 
 ---
 
-### 7. 常见陷阱与安全建议
+<img src="../assets/10_uups_vs_transparent.png" alt="UUPS V.S Transparent Proxy" style="width:60%; max-width:600px;" />
 
-- 初始化函数写在逻辑合约中，需通过 `initializer` 限制只调用一次
-- 注意 `delegatecall` 的上下文混淆：msg.sender 与 storage 都是 Proxy 的
-- 不要在 Implementation 合约中定义构造函数，因其不会被调用
-- 使用 OpenZeppelin 的 `@openzeppelin/contracts-upgradeable` 模板提升安全性
+| 对比项 | Transparent Proxy | UUPS Proxy |
+| --- | --- | --- |
+| 升级权限入口 | Proxy 合约中内置 `admin` 角色 | 逻辑合约实现 `_authorizeUpgrade()` |
+| 权限边界 | Proxy 过滤函数（`if caller == admin`） | 由逻辑合约自行决定 |
+| 灵活性 | 中规中矩，适合多人管理 | 更灵活，但必须小心实现 |
+| 合约复杂度 | 多一层 Proxy Admin 管理逻辑 | Proxy 更轻，Logic 更强 |
+
+图中左侧展示了 Transparent Proxy 如何区分用户与管理员调用，右侧展示 UUPS 模式通过 `upgradeTo()` 函数与权限修饰器控制访问升级逻辑。
+
+> ✅ 建议开发者：低风险应用用 Transparent，熟练项目团队使用 UUPS
+>
+
+## 8. 升级中的常见陷阱与踩坑
+
+| 问题 | 描述 | 后果 |
+| --- | --- | --- |
+| ❌ 存储冲突 | LogicV2 新增变量，slot 覆盖旧状态 | 状态混乱 |
+| ❌ 初始化重复 | 忘记使用 `initializer` 修饰 | 可被攻击者初始化 |
+| ❌ 构造函数中写逻辑 | 构造函数不会被 Proxy 调用 | 初始化逻辑无效 |
+| ❌ 授权函数写错 | `_authorizeUpgrade()` 被开放 | 任何人可升级 |
+| ❌ 使用 constructor 初始化 owner | 不会生效，应用 OwnableUpgradeable |  |
+
+> 💡 推荐使用 OpenZeppelin 的 Upgrade 插件（如 @openzeppelin/hardhat-upgrades）生成脚手架代码，避免低级错误。
+>
 
 ---
+
+## 9. 存储对齐 & 升级兼容性
+
+在升级过程中，**Logic 合约必须保持与 Proxy 合约存储布局完全一致**。
+
+<img src="../assets/10_store_slot.png" alt="存储对齐" style="width:60%; max-width:600px;" />
+
+- Logic 合约中的字段声明必须保持顺序、类型不变
+- 新增字段只能追加到末尾，不能插入中间或重排
+
+例如：
+
+```solidity
+// V1
+contract LogicV1 {
+    uint256 public count;  // slot 0
+}
+
+// V2
+contract LogicV2 {
+    uint256 public count;       // slot 0 (继承)
+    address public owner;       // slot 1 ✅ 新增字段
+}
+```
+
+❌ 一旦发生 slot 覆盖（如 uint → address），将导致旧状态损坏或被攻击者利用。
 
 ### ✅ 小结
 
-Proxy 是解决合约升级刚性的重要模式。了解 delegatecall 原理、掌握 EIP 标准、避免典型安全陷阱，是每位智能合约开发者的必备能力
-
----
+合约升级是链上协议可持续进化的根基。Proxy 模式虽带来灵活性，但也伴随着复杂度与安全风险。理解 delegatecall 的上下文传递、掌握存储对齐规则、使用标准库工具封装，是构建可升级、安全、高可维护合约的核心工程能
 
 ## 🔄 导航
 
-> ⬅️ 上一篇：[合约升级机制与 Proxy 模式](./10_upgrade_proxy.md)
-> ➡️ 下一篇：[账户抽象](./11_abstract_account.md)
+> ⬅️ 上一篇：[Rollup 与未来扩展路线](./09_rollup_scaling.md)
+> ➡️ 下一篇：待续
 >
 
 📚 作者：Henry
