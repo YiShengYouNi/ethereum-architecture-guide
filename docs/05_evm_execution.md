@@ -18,8 +18,7 @@ EVM（Ethereum Virtual Machine）是每个以太坊节点内运行的**一致性
 > ✅ 可理解为：每个节点都有一台“以太坊 CPU”，运行完全相同的程序，确保链上状态同步更新。
 >
 
-![EVM](../assets/05_evm.png)
-<img src="../assets/02_eth_section.png" alt="以太坊核心组成" style="width:60%; max-width:600px;" />
+<img src="../assets/05_evm.png" alt="EVM" style="width:60%; max-width:600px;" />
 
 ---
 
@@ -36,8 +35,7 @@ EVM 是**基于栈的执行引擎**，每次交易创建一个“上下文执行
 | ⛽ Gas Tracker | 追踪剩余 gas，若为 0 即中断执行 |
 | 📤 Return Data Buffer | 执行`CALL`或`DELEGATECALL`后的返回值，用于向上传递结果 |
 
-![EVM 执行示意图](../assets/05_evm_execution.png)
-<img src="../assets/02_eth_section.png" alt="以太坊核心组成" style="width:60%; max-width:600px;" />
+<img src="../assets/05_evm_execution.png" alt="EVM 执行示意图" style="width:60%; max-width:600px;" />
 
 ---
 
