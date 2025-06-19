@@ -48,7 +48,7 @@
 | ⛽ Gas 机制 | 控制计算资源消耗、防止滥用的经济模型 |
 | 🔐 共识机制 | 保障账本一致性（从 PoW 过渡至 PoS） |
 
-<img src="../assets/02_eth_section.png" alt="以太坊核心组成" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/02_eth_section.png" alt="以太坊核心组成" style="width:60%; max-width:600px;" />
 
 ---
 

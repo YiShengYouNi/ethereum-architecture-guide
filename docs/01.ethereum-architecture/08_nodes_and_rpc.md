@@ -56,7 +56,7 @@
 | 归档节点 | 存储每个历史状态快照 | 区块浏览器、分析平台 |
 | 验证者节点 | PoS 出块与验证（含质押） | Staking、Lido 节点 |
 
-<img src="../assets/08_eth_node.png" alt="ETH节点类型" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/08_eth_node.png" alt="ETH节点类型" style="width:60%; max-width:600px;" />
 
 📌 客户端 ≠ 节点，只有程序**运行起来并参与网络同步**，才是真正节点。
 
@@ -154,7 +154,7 @@ await window.ethereum.request({
 
 📌 例如 `eth_getBalance` 会触发 StateManager 读取账户状态树。
 
-<img src="../assets/08_rpc_flow.png" alt="RPC流程" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/08_rpc_flow.png" alt="RPC流程" style="width:60%; max-width:600px;" />
 
 ---
 
@@ -185,7 +185,7 @@ geth --syncmode snap \
 
 它们通过标准化接口 **Engine API** 进行通信，实现职责解耦。
 
-<img src="../assets/08_exec_consensus.png" alt="共识层与执行层" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/08_exec_consensus.png" alt="共识层与执行层" style="width:60%; max-width:600px;" />
 
 ### 🧩 执行层特点
 

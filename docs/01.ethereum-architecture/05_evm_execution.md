@@ -35,7 +35,7 @@ EVM 是**基于栈的执行引擎**，每次交易创建一个“上下文执行
 | ⛽ Gas Tracker | 追踪剩余 gas，若为 0 即中断执行 |
 | 📤 Return Data Buffer | 执行`CALL`或`DELEGATECALL`后的返回值，用于向上传递结果 |
 
-<img src="../assets/05_evm_execution.png" alt="EVM 执行示意图" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/05_evm_execution.png" alt="EVM 执行示意图" style="width:60%; max-width:600px;" />
 
 ---
 

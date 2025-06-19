@@ -57,7 +57,7 @@
 
 ## ✦ 4. EIP-4337 架构总览
 
-![EIP-4337架构](../assets/11_eip_4337_arthi.png)
+![EIP-4337架构](../../assets/01/11_eip_4337_arthi.png)
 
 ```text
 用户 
@@ -83,7 +83,7 @@
 
 ## ✦ 5. UserOperation 执行
 
-![UserOperation执行流程](../assets/11_user_operation_flow.png)
+![UserOperation执行流程](../../assets/01/11_user_operation_flow.png)
 
 ```text
 Step 1：用户发起意图（调用 DApp）
@@ -126,7 +126,7 @@ Step 7：结算 gas，调用 Paymaster（如有）
 
 ## ✦ 7. Smart Account 生命周期图
 
-![UserOperation生命周期](../assets/11_smart_account_lifecycle.png)
+![UserOperation生命周期](../../assets/01/11_smart_account_lifecycle.png)
 
 - initCode 存在时表示首次部署
 - 钱包执行验证逻辑（可扩展为社交恢复等）
@@ -169,7 +169,7 @@ Paymaster 逻辑由合约定义，可定制身份、Token、时间等策略。
 
 ## ✦ 11.对比传统账户
 
-![AA对比传统账户](../assets/11_aa_vs_traditional.png)
+![AA对比传统账户](../../assets/01/11_aa_vs_traditional.png)
 
 ## ✅ 小结
 

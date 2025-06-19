@@ -50,7 +50,7 @@ Proxy 升级通过两个合约组合实现：
 
 ## ✦4. Proxy 合约结构图
 
-<img src="../assets/10_proxy_structor.png" alt="Proxy合约结构图" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/10_proxy_structor.png" alt="Proxy合约结构图" style="width:60%; max-width:600px;" />
 
 - 用户（EOA）发起调用，请求发送到 **Proxy 合约地址**
 - Proxy 合约内部不包含实际业务逻辑，仅持有存储，并使用 `delegatecall` 将请求转发至 逻辑 合约
@@ -114,7 +114,7 @@ contract MyLogic is UUPSUpgradeable, OwnableUpgradeable {
 
 ---
 
-<img src="../assets/10_uups_vs_transparent.png" alt="UUPS V.S Transparent Proxy" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/10_uups_vs_transparent.png" alt="UUPS V.S Transparent Proxy" style="width:60%; max-width:600px;" />
 
 | 对比项 | Transparent Proxy | UUPS Proxy |
 | --- | --- | --- |
@@ -147,7 +147,7 @@ contract MyLogic is UUPSUpgradeable, OwnableUpgradeable {
 
 在升级过程中，**Logic 合约必须保持与 Proxy 合约存储布局完全一致**。
 
-<img src="../assets/10_store_slot.png" alt="存储对齐" style="width:60%; max-width:600px;" />
+<img src="../../assets/01/10_store_slot.png" alt="存储对齐" style="width:60%; max-width:600px;" />
 
 - Logic 合约中的字段声明必须保持顺序、类型不变
 - 新增字段只能追加到末尾，不能插入中间或重排
